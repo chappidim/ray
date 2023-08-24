@@ -91,7 +91,7 @@ def test_group_workers_by_ip(ray_start_2_cpus):
                     node_id="dummy",
                     node_ip=ip,
                     hostname="dummy",
-                    gpu_ids=None,
+                    gpu_and_accelerator_ids=None,
                     pid=0,
                 ),
             )

@@ -97,7 +97,7 @@ def mock_add_workers(self, num_workers):
             node_id=0,
             node_ip=str(i % 2),
             hostname=0,
-            gpu_ids=[0],
+            gpu_and_accelerator_ids={"GPU": ["0"]},
             pid=0,
         )
         worker.metadata = metadata
