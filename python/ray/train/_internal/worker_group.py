@@ -52,7 +52,7 @@ class WorkerMetadata:
     node_id: str
     node_ip: str
     hostname: str
-    gpu_and_accelerator_ids: dict[str, list[str]]
+    gpu_and_accelerator_ids: Dict[str, List[str]]
     pid: int
 
 
@@ -98,7 +98,17 @@ def construct_metadata() -> WorkerMetadata:
     )
 
 
-def _get_gpu_and_accelerator_ids() -> dict[str, list[str]]:
+def _get_gpu_and_accelerator_ids() -> Dict[str, List[str]]:
+    """Get GPU and accelerator IDs from runtime context for given actor/worker.
+
+    Returns:
+        A dictionary mapping resource IDs to a list of resource IDs.
+        For example,
+        {
+            "GPU": ["0", "1"],
+            "neuron_cores": ["0", "1"]
+        }
+    """
     gpu_and_accelerator_ids = defaultdict(list)
 
     resource_ids = ray.get_runtime_context().get_resource_ids()

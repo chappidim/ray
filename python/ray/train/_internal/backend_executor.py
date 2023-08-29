@@ -312,10 +312,12 @@ class BackendExecutor:
                 list of runtime_ids.
             env_var: The name of the environment variable to set.
         """
+        node_id_to_worker_id = defaultdict(set)
         node_id_to_runtime_ids = defaultdict(set)
 
-        for worker_id, (node_id, i) in enumerate(node_ids_and_runtime_ids):
-            node_id_to_runtime_ids[node_id].update(i)
+        for worker_id, (node_id, runtime_id) in enumerate(node_ids_and_runtime_ids):
+            node_id_to_worker_id[node_id].add(worker_id)
+            node_id_to_runtime_ids[node_id].update(runtime_id)
 
         futures = []
         for node_id, runtime_ids in node_id_to_runtime_ids.items():
@@ -325,7 +327,7 @@ class BackendExecutor:
             def set_runtime_ids():
                 os.environ[env_var] = all_runtime_ids
 
-            for worker_id in node_id_to_runtime_ids[node_id]:
+            for worker_id in node_id_to_worker_id[node_id]:
                 futures.append(
                     self.worker_group.execute_single_async(worker_id, set_runtime_ids)
                 )
