@@ -52,7 +52,7 @@ class WorkerMetadata:
     node_id: str
     node_ip: str
     hostname: str
-    gpu_and_accelerator_ids: dict[str, Optional[list[str]]]
+    gpu_and_accelerator_ids: dict[str, list[str]]
     pid: int
 
 
@@ -98,13 +98,16 @@ def construct_metadata() -> WorkerMetadata:
     )
 
 
-def _get_gpu_and_accelerator_ids() -> Type[dict[str, Optional[list[str]]]]:
-    gpu_and_accelerator_ids = Dict[str, Optional[List[str]]]
+def _get_gpu_and_accelerator_ids() -> dict[str, list[str]]:
+    gpu_and_accelerator_ids = defaultdict(list)
+
     resource_ids = ray.get_runtime_context().get_resource_ids()
     gpu_ids = resource_ids[ray_constants.GPU]
     neuron_core_ids = resource_ids[ray_constants.NEURON_CORES]
-    gpu_and_accelerator_ids[ray_constants.GPU] = gpu_ids
-    gpu_and_accelerator_ids[ray_constants.NEURON_CORES] = neuron_core_ids
+
+    gpu_and_accelerator_ids[ray_constants.GPU].extend(gpu_ids)
+    gpu_and_accelerator_ids[ray_constants.NEURON_CORES].extend(neuron_core_ids)
+
     if len(gpu_ids) > 0 and len(neuron_core_ids) > 0:
         raise RuntimeError("Cannot support GPU and Neuron Core IDs on same Worker.")
     return gpu_and_accelerator_ids
